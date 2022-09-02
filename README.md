@@ -8,12 +8,8 @@
 Proyecto plantilla para los trabajos prácticos de la asignatura electiva [Técnicas de Gráficos por Computadora](http://tgc-utn.github.io/) (TGC) en la carrera de Ingeniería en Sistemas de Información. Universidad Tecnológica Nacional, Facultad Regional Buenos Aires (UTN-FRBA).
 
 ## Integrantes
-Corrales, Leonardo
--------------
-Gauna, Martin Javier
--------------
-Lopez Joffre, Dolores
------------- | -------------
-Palomino, Camila
------------- | -------------
-Sartorio, Agustin Nicolas
+- Corrales, Leonardo
+- Gauna, Martin Javier
+- Lopez Joffre, Dolores
+- Palomino, Camila
+- Sartorio, Agustin Nicolas
