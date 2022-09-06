@@ -5,6 +5,27 @@ using Microsoft.Xna.Framework.Input;
 
 namespace TGC.MonoGame.TP
 {
+
+    /**
+*? Clases que vamos a necesitar para crear los sig objetos
+*? Por ahora lo pongo por acá  dsp se acomoda 
+*    - escaleras
+*    - rampas para bajar y tomar impulso
+*    - distintos pisos
+*    - saltar el "vacio"
+*    - caminito tipo zigzag sin barandas
+*    - barrera/puerta que se mueve 
+*
+*    *obstaculos*
+*    - pinchos
+*    - "cajas" que se mueven
+*    - "cajas" que caigan del cielo
+*/
+        public class Ball{ }
+        public class Piso{ }
+        public class Obstaculo{ }
+        public class Trampa{ }
+        public class Caja{ }
     /// <summary>
     ///     Esta es la clase principal  del juego.
     ///     Inicialmente puede ser renombrado o copiado para hacer más ejemplos chicos, en el caso de copiar para que se
@@ -33,6 +54,7 @@ namespace TGC.MonoGame.TP
             // Hace que el mouse sea visible.
             IsMouseVisible = true;
         }
+
 
         private GraphicsDeviceManager Graphics { get; }
         private SpriteBatch SpriteBatch { get; set; }
