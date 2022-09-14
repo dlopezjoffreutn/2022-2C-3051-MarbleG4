@@ -5,10 +5,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace TGC.MonoGame.TP
 {
-
-    /**
-*? Clases que vamos a necesitar para crear los sig objetos
-*? Por ahora lo pongo por acá  dsp se acomoda 
+/*
 *    - escaleras
 *    - rampas para bajar y tomar impulso
 *    - distintos pisos
@@ -21,11 +18,7 @@ namespace TGC.MonoGame.TP
 *    - "cajas" que se mueven
 *    - "cajas" que caigan del cielo
 */
-        public class Ball{ }
-        public class Piso{ }
-        public class Obstaculo{ }
-        public class Trampa{ }
-        public class Caja{ }
+
     /// <summary>
     ///     Esta es la clase principal  del juego.
     ///     Inicialmente puede ser renombrado o copiado para hacer más ejemplos chicos, en el caso de copiar para que se
@@ -55,6 +48,9 @@ namespace TGC.MonoGame.TP
             IsMouseVisible = true;
         }
 
+        private Point screenSize { get; set; } 
+        private Player Player { get; set; }
+        private Camera Camera { get; set; }
 
         private GraphicsDeviceManager Graphics { get; }
         private SpriteBatch SpriteBatch { get; set; }
@@ -81,11 +77,24 @@ namespace TGC.MonoGame.TP
             GraphicsDevice.RasterizerState = rasterizerState;
             // Seria hasta aca.
 
+            screenSize = new Point(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
+           
+            // Inicializacion del Player
+            Player = new Player(GraphicsDevice, Content, null, Color.Green);
+            
+            // Inicializacion de la camara que sigue al Player
+            Camera = new FollowCamera(GraphicsDevice.Viewport.AspectRatio, Player.Position, screenSize);
+            Camera.FrontDirection = Vector3.Normalize(new Vector3(Player.Position.X - Camera.Position.X, 0, Player.Position.Z - Camera.Position.Z));
+            Camera.RightDirection = Vector3.Normalize(Vector3.Cross(Camera.FrontDirection, Vector3.Up));
+            
+
             // Configuramos nuestras matrices de la escena.
             World = Matrix.Identity;
             View = Matrix.CreateLookAt(Vector3.UnitZ * 150, Vector3.Zero, Vector3.Up);
             Projection =
                 Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, GraphicsDevice.Viewport.AspectRatio, 1, 250);
+
+            var viewMatrix = Matrix.CreateLookAt(new Vector3(0, 0, 50), Vector3.Forward, Vector3.Up);
 
             base.Initialize();
         }
@@ -97,6 +106,8 @@ namespace TGC.MonoGame.TP
         /// </summary>
         protected override void LoadContent()
         {
+            Camera = new FollowCamera(GraphicsDevice.Viewport.AspectRatio, new Vector3(0, 5, 0), screenSize);
+
             // Aca es donde deberiamos cargar todos los contenido necesarios antes de iniciar el juego.
             SpriteBatch = new SpriteBatch(GraphicsDevice);
 
@@ -125,11 +136,36 @@ namespace TGC.MonoGame.TP
         protected override void Update(GameTime gameTime)
         {
             // Aca deberiamos poner toda la logica de actualizacion del juego.
+            var keyboardState = Keyboard.GetState();
 
             // Capturar Input teclado
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 //Salgo del juego.
                 Exit();
+
+            Camera.UpdatePlayerPosition(Player.Position);
+            Camera.Update(gameTime);
+
+            if (keyboardState.IsKeyDown(Keys.Right) || keyboardState.IsKeyDown(Keys.D))
+            {
+                Player.Move(Camera.RightDirection);
+            }
+            if (keyboardState.IsKeyDown(Keys.Left) || keyboardState.IsKeyDown(Keys.A))
+            {
+                Player.Move(Camera.RightDirection * -1);
+            }
+            if (keyboardState.IsKeyDown(Keys.Up) || keyboardState.IsKeyDown(Keys.W))
+            {
+                Player.Move(Camera.FrontDirection);
+            }
+            if (keyboardState.IsKeyDown(Keys.Down) || keyboardState.IsKeyDown(Keys.S))
+            {
+                Player.Move(Camera.FrontDirection * -1);
+            }
+            if (keyboardState.IsKeyDown(Keys.Space))
+            {
+                Player.Jump();
+            }
 
             // Basado en el tiempo que paso se va generando una rotacion.
             Rotation += Convert.ToSingle(gameTime.ElapsedGameTime.TotalSeconds);
