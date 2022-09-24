@@ -91,7 +91,7 @@ namespace TGC.MonoGame.TP.Geometries
             IndexBuffer.SetData(Indices.ToArray());
 
             // Create a BasicEffect, which will be used to render the primitive.
-            Effect = content.Load<Effect>(ContentFolderEffects + "ShaderBlingPhong");
+            Effect = content.Load<Effect>(ContentFolderEffects + "BasicShader");
             //Effect.VertexColorEnabled = true;
             //Effect.EnableDefaultLighting();
         }

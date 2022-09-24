@@ -70,11 +70,11 @@ namespace TGC.MonoGame.TP
 
 		public Player(GraphicsDevice graphics, ContentManager content, Effect Effect, Color color)
 		{
-			Model = content.Load<Model>("Models/" + "geometries/sphere");
+			Model = content.Load<Model>("Models/geometries/sphere");
 
 			//Texture1 = content.Load<Texture2D>("Textures/" + "water");
 			currentGraphics = graphics;
-			PlayerEffect = content.Load<Effect>("Effects/" + "ShaderBlingPhongTex");
+			PlayerEffect = content.Load<Effect>("Effects/BasicShader");
 			//Texture2 = content.Load<Texture2D>("Textures/" + "texture2");
 			//Texture3 = content.Load<Texture2D>("Textures/" + "texture3");
 			PlayerTexture = Texture1;

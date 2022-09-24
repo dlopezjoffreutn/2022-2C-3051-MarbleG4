@@ -113,7 +113,8 @@ namespace TGC.MonoGame.TP
 
             // Cargo el modelo del logo.
             Model = Content.Load<Model>(ContentFolder3D + "tgc-logo/tgc-logo");
-
+           // Model = Content.Load<Model>(ContentFolder3D + "geometries/sphere");
+            
             // Cargo un efecto basico propio declarado en el Content pipeline.
             // En el juego no pueden usar BasicEffect de MG, deben usar siempre efectos propios.
             Effect = Content.Load<Effect>(ContentFolderEffects + "BasicShader");
@@ -139,7 +140,7 @@ namespace TGC.MonoGame.TP
             var keyboardState = Keyboard.GetState();
 
             // Capturar Input teclado
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if (Keyboard.GetState().IsKeyDown(Keys.Q))
                 //Salgo del juego.
                 Exit();
 
