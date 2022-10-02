@@ -282,7 +282,7 @@ namespace TGC.MonoGame.TP
                 Effect.Parameters["World"].SetValue(World);
                 mesh.Draw();
             }
-             CarModel.Draw(CarWorld,FollowCamera.View,FollowCamera.Projection);
+             //Barril.Draw(BarrilMatrix,FollowCamera.View,FollowCamera.Projection);
             Sphere.Draw(World,Camera.View,Camera.Projection);
            // Cono.Draw(ConoMatrix,)
 
