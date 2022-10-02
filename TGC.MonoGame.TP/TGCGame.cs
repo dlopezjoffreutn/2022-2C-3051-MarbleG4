@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-
+using TGC.MonoGame.TP.Geometries;
 namespace TGC.MonoGame.TP
 {
 /*
@@ -200,7 +200,7 @@ namespace TGC.MonoGame.TP
             
 
 
-
+            UpdateCamera();
             base.LoadContent();
         }
 
@@ -253,6 +253,9 @@ namespace TGC.MonoGame.TP
         ///     Se llama cada vez que hay que refrescar la pantalla.
         ///     Escribir aqui el codigo referido al renderizado.
         /// </summary>
+        protected void DrawModel(GameTime gameTime, Effect effect, ){
+
+        } 
         protected override void Draw(GameTime gameTime)
         {
             // Aca deberiamos poner toda la logia de renderizado del juego.
@@ -279,6 +282,10 @@ namespace TGC.MonoGame.TP
                 Effect.Parameters["World"].SetValue(World);
                 mesh.Draw();
             }
+             CarModel.Draw(CarWorld,FollowCamera.View,FollowCamera.Projection);
+            Sphere.Draw(World,Camera.View,Camera.Projection);
+           // Cono.Draw(ConoMatrix,)
+
         }
 
         /// <summary>
