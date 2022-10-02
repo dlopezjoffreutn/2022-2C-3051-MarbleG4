@@ -61,6 +61,32 @@ namespace TGC.MonoGame.TP
         private Matrix View { get; set; }
         private Matrix Projection { get; set; }
 
+         // World matrices
+        private Matrix BoxWorld { get; set; }
+        private Matrix ConoMatrix { get; set; }
+        private Matrix FloorMatrix { get; set; }
+        private Matrix BarrilMatrix { get; set; }
+
+        private Matrix SphereMatrix { get; set; }
+        private Model Cono { get; set; }
+        private Model Barril { get; set; }
+        private Model Sphere { get; set; }
+        private Model Mundo { get; set; }
+
+        private List<Texture2D> ListaTexturas { get; set; }
+        private List<Texture2D> ConoTexturas { get; set; }
+        private Texture2D EsferaTexturas { get; set; }
+        private List<Texture2D> BarrilTexturas { get; set; }
+
+        // Effect for the objects and boxes
+            private BasicEffect BoxesEffect { get; set; }
+            private BasicEffect ObjEffect { get; set; }
+            private BasicEffect PointEffect { get; set; }
+
+        //Coliciones
+        private BoundingBox[] Colliders { get; set; }
+       
+            
         /// <summary>
         ///     Se llama una sola vez, al principio cuando se ejecuta el ejemplo.
         ///     Escribir aqui el codigo de inicializacion: el procesamiento que podemos pre calcular para nuestro juego.
@@ -80,8 +106,11 @@ namespace TGC.MonoGame.TP
             screenSize = new Point(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
            
             // Inicializacion del Player
-            Player = new Player(GraphicsDevice, Content, null, Color.Green);
+            //Player = new Player(GraphicsDevice, Content, null, Color.Green);
             
+            // Inicialización lista de texturas donde se van a guardar todas las texturas que vamos a usar 
+           // ListaTexturas = new List<Texture2D>
+
             // Inicializacion de la camara que sigue al Player
             Camera = new FollowCamera(GraphicsDevice.Viewport.AspectRatio, Player.Position, screenSize);
             Camera.FrontDirection = Vector3.Normalize(new Vector3(Player.Position.X - Camera.Position.X, 0, Player.Position.Z - Camera.Position.Z));
@@ -96,6 +125,14 @@ namespace TGC.MonoGame.TP
 
             var viewMatrix = Matrix.CreateLookAt(new Vector3(0, 0, 50), Vector3.Forward, Vector3.Up);
 
+            BoxWorld = Matrix.CreateScale(30f) * Matrix.CreateTranslation(85f, 15f, zPosition: -15f);
+            FloorWorld = Matrix.CreateScale(200f, 0.001f, 200f);
+
+            BoxesEffect = new BasicEffect(GraphicsDevice);
+            
+            ObjEffect=new BasicEffect(GraphicsDevice);
+            
+            PointEffect= new BasicEffect(GraphicsDevice);
             base.Initialize();
         }
 
@@ -112,19 +149,57 @@ namespace TGC.MonoGame.TP
             SpriteBatch = new SpriteBatch(GraphicsDevice);
 
             // Cargo el modelo del logo.
-            Model = Content.Load<Model>(ContentFolder3D + "tgc-logo/tgc-logo");
-           // Model = Content.Load<Model>(ContentFolder3D + "geometries/sphere");
+           // Model = Content.Load<Model>(ContentFolder3D + "tgc-logo/tgc-logo");
+           
+           // Cargo los modelos de los objetos
+            Sphere = Content.Load<Model>(ContentFolder3D + "geometries/sphere");
+            Cono = Content.Load<Model>(ContentFolder3D + "geometries/Cone");
+            Barril = Content.Load<Model>(ContentFolder3D + "barriles/barrels_fbx");
             
+
+           
+           
             // Cargo un efecto basico propio declarado en el Content pipeline.
             // En el juego no pueden usar BasicEffect de MG, deben usar siempre efectos propios.
             Effect = Content.Load<Effect>(ContentFolderEffects + "BasicShader");
+            PointEffect.TextureEnable = true;
+            BoxesEffect.TextureEnable = true;
+            ObjEffect.TextureEnable = true;
+            
+
+            //
+            ConoTexturas.Add(Content.Load<Texture2D>(ContentFolderTextures+"Cone/Cone Mat_Base_Color"));
+            ConoTexturas.Add(Content.Load<Texture2D>(ContentFolderTextures+"Cone/Cone Mat_Height"));
+            ConoTexturas.Add(Content.Load<Texture2D>(ContentFolderTextures+"Cone/Cone Mat_Normal"));
+            ConoTexturas.Add(Content.Load<Texture2D>(ContentFolderTextures+"Cone/Cone Mat_Metallic"));
 
             // Asigno el efecto que cargue a cada parte del mesh.
             // Un modelo puede tener mas de 1 mesh internamente.
-            foreach (var mesh in Model.Meshes)
+
+            foreach (var mesh in Sphere.Meshes)
+
                 // Un mesh puede tener mas de 1 mesh part (cada 1 puede tener su propio efecto).
-            foreach (var meshPart in mesh.MeshParts)
+                //Cargo las texturas 
+            foreach (var meshPart in mesh.MeshParts){
+                ObjEffect =((BasicEffect)meshPart.Effect = Effect);
                 meshPart.Effect = Effect;
+                };
+
+            foreach (var meshCono in Cono.Meshes)
+            foreach (var meshConoPart in meshCono.MeshParts){
+                ObjEffect =((BasicEffect)meshConoPart.Effect = Effect);
+                if(basicEffect.Texture != null )
+                    ListaTexturas.Add(basicEffect.Texture);
+                
+                meshPart.Effect = Effect;
+                };
+            foreach (var meshBarril in Barril.Meshes)
+            foreach (var meshBarrilPart in meshBarril.MeshParts){
+                ObjEffect =((BasicEffect)meshBarrilPart.Effect = Effect);
+             }
+            
+
+
 
             base.LoadContent();
         }
@@ -183,14 +258,23 @@ namespace TGC.MonoGame.TP
             // Aca deberiamos poner toda la logia de renderizado del juego.
             GraphicsDevice.Clear(Color.Black);
 
+            GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+            GraphicsDevice.BlendState = BlendState.Opaque;
+
             // Para dibujar le modelo necesitamos pasarle informacion que el efecto esta esperando.
             Effect.Parameters["View"].SetValue(View);
             Effect.Parameters["Projection"].SetValue(Projection);
             Effect.Parameters["DiffuseColor"].SetValue(Color.DarkBlue.ToVector3());
+           
             var rotationMatrix = Matrix.CreateRotationY(Rotation);
-
+            var indice =0;
             foreach (var mesh in Model.Meshes)
             {
+               var bassicEffect =((BasicEffect)Model.Effect = Effect);
+                if(basicEffect.Texture != null ){
+                    Effect.Parameters["Texture"]?.SetValue(indice);
+                    indice++;
+                 };    
                 World = mesh.ParentBone.Transform * rotationMatrix;
                 Effect.Parameters["World"].SetValue(World);
                 mesh.Draw();
