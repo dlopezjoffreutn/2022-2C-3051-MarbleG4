@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -126,7 +127,7 @@ namespace TGC.MonoGame.TP
             var viewMatrix = Matrix.CreateLookAt(new Vector3(0, 0, 50), Vector3.Forward, Vector3.Up);
 
             BoxWorld = Matrix.CreateScale(30f) * Matrix.CreateTranslation(85f, 15f, zPosition: -15f);
-            FloorWorld = Matrix.CreateScale(200f, 0.001f, 200f);
+            FloorMatrix = Matrix.CreateScale(200f, 0.001f, 200f);
 
             BoxesEffect = new BasicEffect(GraphicsDevice);
             
@@ -191,7 +192,7 @@ namespace TGC.MonoGame.TP
                 if(basicEffect.Texture != null )
                     ListaTexturas.Add(basicEffect.Texture);
                 
-                meshPart.Effect = Effect;
+                meshConoPart.Effect = Effect;
                 };
             foreach (var meshBarril in Barril.Meshes)
             foreach (var meshBarrilPart in meshBarril.MeshParts){
@@ -200,7 +201,7 @@ namespace TGC.MonoGame.TP
             
 
 
-            UpdateCamera();
+           
             base.LoadContent();
         }
 
@@ -269,9 +270,9 @@ namespace TGC.MonoGame.TP
            
             var rotationMatrix = Matrix.CreateRotationY(Rotation);
             var indice =0;
-            foreach (var mesh in Model.Meshes)
+            foreach (var mesh in Sphere.Meshes)
             {
-               var bassicEffect =((BasicEffect)Model.Effect = Effect);
+               var bassicEffect =((BasicEffect)Sphere.Effect = Effect);
                 if(basicEffect.Texture != null ){
                     Effect.Parameters["Texture"]?.SetValue(indice);
                     indice++;
@@ -280,7 +281,26 @@ namespace TGC.MonoGame.TP
                 Effect.Parameters["World"].SetValue(World);
                 mesh.Draw();
             }
-             //Barril.Draw(BarrilMatrix,FollowCamera.View,FollowCamera.Projection);
+            indice=0;
+            foreach (var meshConoPart in Cono.Meshes){
+                ObjEffect =((BasicEffect)Cono.Effect = Effect);
+                if(ObjEffect.Texture != null ){ 
+                    ObjEffect.Parameters["Texture"]?.SetValue(indice);
+                    indice++;
+                };
+                meshConoPart.Draw();
+             }    
+            indice=0;
+            foreach (var meshBarril in Barril.Meshes){
+                ObjEffect =((BasicEffect)Barril.Effect = Effect);
+                if(ObjEffect.Texture != null ){ 
+                    ObjEffect.Parameters["Texture"]?.SetValue(indice);
+                    indice++;
+                };
+                meshBarril.Draw();
+             }    
+              
+            Barril.Draw(BarrilMatrix,Camera.View,Camera.Projection);
             Sphere.Draw(World,Camera.View,Camera.Projection);
            // Cono.Draw(ConoMatrix,)
 
