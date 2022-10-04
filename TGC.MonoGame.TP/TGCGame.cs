@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -126,7 +128,7 @@ namespace TGC.MonoGame.TP
             var viewMatrix = Matrix.CreateLookAt(new Vector3(0, 0, 50), Vector3.Forward, Vector3.Up);
 
             BoxWorld = Matrix.CreateScale(30f) * Matrix.CreateTranslation(85f, 15f, zPosition: -15f);
-            FloorWorld = Matrix.CreateScale(200f, 0.001f, 200f);
+            FloorMatrix = Matrix.CreateScale(200f, 0.001f, 200f);
 
             BoxesEffect = new BasicEffect(GraphicsDevice);
             
@@ -162,9 +164,9 @@ namespace TGC.MonoGame.TP
             // Cargo un efecto basico propio declarado en el Content pipeline.
             // En el juego no pueden usar BasicEffect de MG, deben usar siempre efectos propios.
             Effect = Content.Load<Effect>(ContentFolderEffects + "BasicShader");
-            PointEffect.TextureEnable = true;
-            BoxesEffect.TextureEnable = true;
-            ObjEffect.TextureEnable = true;
+            //PointEffect.TextureEnable = true;
+            //BoxesEffect.TextureEnable = true;
+            //ObjEffect.TextureEnable = true;
             
 
             //
@@ -176,31 +178,33 @@ namespace TGC.MonoGame.TP
             // Asigno el efecto que cargue a cada parte del mesh.
             // Un modelo puede tener mas de 1 mesh internamente.
 
-            foreach (var mesh in Sphere.Meshes)
+            foreach (var mesh in Sphere.Meshes) { 
 
                 // Un mesh puede tener mas de 1 mesh part (cada 1 puede tener su propio efecto).
                 //Cargo las texturas 
-            foreach (var meshPart in mesh.MeshParts){
-                ObjEffect =((BasicEffect)meshPart.Effect = Effect);
-                meshPart.Effect = Effect;
-                };
-
+                foreach (var meshPart in mesh.MeshParts){
+                    ObjEffect =((BasicEffect)meshPart.Effect);
+                    meshPart.Effect = Effect;
+                    };
+            }
             foreach (var meshCono in Cono.Meshes)
-            foreach (var meshConoPart in meshCono.MeshParts){
-                ObjEffect =((BasicEffect)meshConoPart.Effect = Effect);
-                if(basicEffect.Texture != null )
-                    ListaTexturas.Add(basicEffect.Texture);
-                
-                meshPart.Effect = Effect;
+            {
+                foreach (var meshConoPart in meshCono.MeshParts)
+                {
+                    ObjEffect = ((BasicEffect)meshConoPart.Effect);
+                    if (ObjEffect.Texture != null)
+                        ListaTexturas.Add(ObjEffect.Texture);
+                    meshConoPart.Effect = Effect;
                 };
+            }
             foreach (var meshBarril in Barril.Meshes)
-            foreach (var meshBarrilPart in meshBarril.MeshParts){
-                ObjEffect =((BasicEffect)meshBarrilPart.Effect = Effect);
-             }
-            
+            {
+                foreach (var meshBarrilPart in meshBarril.MeshParts)
+                {
+                    ObjEffect = ((BasicEffect)meshBarrilPart.Effect);
+                }
+            }
 
-
-            UpdateCamera();
             base.LoadContent();
         }
 
@@ -253,7 +257,7 @@ namespace TGC.MonoGame.TP
         ///     Se llama cada vez que hay que refrescar la pantalla.
         ///     Escribir aqui el codigo referido al renderizado.
         /// </summary>
-        protected void DrawModel(GameTime gameTime, Effect effect, ){
+        protected void DrawModel(GameTime gameTime, Effect effect){
 
         } 
         protected override void Draw(GameTime gameTime)
@@ -273,8 +277,8 @@ namespace TGC.MonoGame.TP
             var indice =0;
             foreach (var mesh in Model.Meshes)
             {
-               var bassicEffect =((BasicEffect)Model.Effect = Effect);
-                if(basicEffect.Texture != null ){
+               var bassicEffect = (BasicEffect)mesh.Effects.FirstOrDefault();
+                if(bassicEffect.Texture != null ){
                     Effect.Parameters["Texture"]?.SetValue(indice);
                     indice++;
                  };    
@@ -282,7 +286,6 @@ namespace TGC.MonoGame.TP
                 Effect.Parameters["World"].SetValue(World);
                 mesh.Draw();
             }
-             CarModel.Draw(CarWorld,FollowCamera.View,FollowCamera.Projection);
             Sphere.Draw(World,Camera.View,Camera.Projection);
            // Cono.Draw(ConoMatrix,)
 
